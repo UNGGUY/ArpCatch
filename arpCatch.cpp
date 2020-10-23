@@ -207,11 +207,16 @@ void packet_handler(u_char* param, const struct pcap_pkthdr* header, const u_cha
 	const arp_packet* arpPacket = (arp_packet*)pkt_data;
 
 	ip = inet_ntoa(*(in_addr*)&arpPacket->arp.sour_ip);
-	mac = static_cast<string>((LPCSTR)arpPacket->arp.sour_addr);
-
-	cout << "ip:" << ip << "    mac:" << mac << endl;
-
-	ArpTable.insert(map<string, string>::value_type(ip, mac));
+	for (int i = 0; i < 6; i++) {
+		if (i > 0) printf("-");
+		mac += arpPacket->arp.sour_addr[i];
+		printf("%02X", arpPacket->arp.sour_addr[i]);
+	}
+	if (0==ArpTable.count(ip))
+	{
+		ArpTable.insert(map<string, string>::value_type(ip, mac));
+		cout << "ip:" << ip << "    mac:" << mac << endl;
+	}
 
 
 
